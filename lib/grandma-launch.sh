@@ -48,7 +48,7 @@ grandma_splash() {
   fi
   printf '  %s%sGRANDMA%s  %sshe remembers everything%s\n' "$B" "$P" "$R" "$D" "$R"
   printf '  %sfetching %s memory...%s\n\n' "$D" "$scope" "$R"
-  sleep "${GRANDMA_SPLASH_SECS:-1.2}"
+  sleep "${GRANDMA_SPLASH_SECS:-0.7}"
 }
 
 # ---- helpers ----
@@ -323,7 +323,7 @@ fi
 
 # grandma pops up, then a one-line status, then the session.
 grandma_splash "$SCOPE"
-printf '  ⟳ %s — launching Claude Code...\n\n' "$BANNER" >&2
+printf '  ⟳ %s\n  ⟳ launching Claude Code — a few seconds; she confirms memory in her first line\n\n' "$BANNER" >&2
 
 # Launch in the project folder if known (so its CLAUDE.md auto-loads), else current dir.
 # --add-dir grants write access to the grandma repo so in-flight captures can land.
