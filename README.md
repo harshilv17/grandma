@@ -129,6 +129,16 @@ grandma watch ...              analysis campaigns over your sessions
 grandma test [scope]           verify the integrity invariants
 ```
 
+## Known quirks (v0.1)
+
+- **Exit sessions with Ctrl+D**, not `/exit`. Claude Code's `/exit` skips SessionEnd
+  hooks (upstream issue), so the end-of-session distill only runs on Ctrl+D. Manual
+  fallback always works: `grandma save <scope>`.
+- Scope names that collide with subcommands (`init`, `save`, `review`, `ingest`,
+  `watch`, `test`, `doctor`, `help`) are reserved.
+- macOS is the daily-driven platform. Linux is CI-tested but younger: if something
+  misbehaves, `grandma doctor` first, then an issue with its output.
+
 ## Roadmap
 
 - Adapters beyond Claude Code (Cursor, Codex CLI, aider)
