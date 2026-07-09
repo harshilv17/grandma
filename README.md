@@ -127,6 +127,7 @@ grandma review [scope]         review what background distills proposed
 grandma ingest [scope]         catalog an existing folder of projects
 grandma watch ...              analysis campaigns over your sessions
 grandma test [scope]           verify the integrity invariants
+grandma knit                   coming next: she acts on what she learned (see below)
 ```
 
 ## Known quirks (v0.1)
@@ -139,8 +140,31 @@ grandma test [scope]           verify the integrity invariants
 - macOS is the daily-driven platform. Linux is CI-tested but younger: if something
   misbehaves, `grandma doctor` first, then an issue with its output.
 
+## Where this is going: remember, watch, knit
+
+Grandma is being built in three phases, and you are looking at the first two.
+
+1. **Remember** (shipped). Scoped memory: who you are, how you work, what each
+   context needs. Loaded every session, learned passively, reviewed via git.
+2. **Watch** (shipped). She analyzes how you actually work: `grandma watch` measures
+   your sessions, reads the substantial ones, and reports the patterns behind your
+   long sessions and wasted tokens.
+3. **Knit** (next). The execution phase: she acts on what she learned. You will say
+   things like
+
+   ```sh
+   grandma knit "based on what you watched, improve my prompt whenever it runs past 500 tokens"
+   ```
+
+   and from then on grandma intervenes in the moment: rewriting the oversized prompt
+   before it ships, nudging you when a session shows the exact pattern that wasted
+   two hours last week, applying the fix her own report recommended. Watch finds the
+   patterns. Knit weaves the fix into your daily work. Contributions and design ideas
+   for knit are welcome: open an issue with the `knit` label.
+
 ## Roadmap
 
+- **grandma knit: the execution phase (see above)**
 - Adapters beyond Claude Code (Cursor, Codex CLI, aider)
 - Community scope templates (share your best scope setups)
 - Team scopes (a shared memory repo your whole team loads)
@@ -148,4 +172,4 @@ grandma test [scope]           verify the integrity invariants
 
 ## License
 
-MIT. Built by [@anshulforyou](https://github.com/anshulforyou), with the help of a grandma who never forgets.
+MIT. Built by [@anshulforyou](https://github.com/anshulforyou). Knitted by a grandma who never forgets.
