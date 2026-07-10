@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # grandma installer:  curl -fsSL https://raw.githubusercontent.com/anshulforyou/grandma/master/install.sh | bash
 set -euo pipefail
-REPO="https://github.com/anshulforyou/grandma.git"
+REPO="${GRANDMA_REPO:-https://github.com/anshulforyou/grandma.git}"
 DEST="${GRANDMA_ENGINE:-$HOME/.grandma-engine}"
 
 command -v git >/dev/null 2>&1 || { echo "git is required"; exit 1; }
