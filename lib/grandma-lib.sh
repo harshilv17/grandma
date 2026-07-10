@@ -63,8 +63,13 @@ list_scopes() {
 }
 
 # ---- portability helpers (BSD/macOS vs GNU/Linux) ----
-file_mtime() { stat -f %m "$1" 2>/dev/null || stat -c %Y "$1" 2>/dev/null || echo 0; }
-file_size()  { stat -f %z "$1" 2>/dev/null || stat -c %s "$1" 2>/dev/null || echo 0; }
+# GNU form (-c) FIRST: on Linux it succeeds cleanly; on macOS it fails with no stdout, so
+# the BSD (-f) fallback runs. The reverse order is unsafe — GNU parses `stat -f %m FILE` as
+# `-f` (file-system mode) plus a bogus filename `%m`, printing the real file's fs block
+# ("File: ...") to stdout AND exiting nonzero, which then also runs the fallback and yields
+# contaminated output. That fed non-numeric junk into arithmetic (the watch tick crash).
+file_mtime() { stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null || echo 0; }
+file_size()  { stat -c %s "$1" 2>/dev/null || stat -f %z "$1" 2>/dev/null || echo 0; }
 epoch_date() { date -r "$1" '+%Y-%m-%d' 2>/dev/null || date -d "@$1" '+%Y-%m-%d' 2>/dev/null || echo "$1"; }
 notify_user() {
   # title, body — macOS notification, Linux notify-send, else silent
