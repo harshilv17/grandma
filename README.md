@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/grandma.gif" width="260" alt="grandma, knitting your memory threads" />
+  <img src="assets/grandma-mascot.gif" width="280" alt="grandma, knitting your memory threads" />
 </p>
 
 <h1 align="center">grandma</h1>
