@@ -22,6 +22,13 @@ scope="${1:-}"; project="${2:-}"
 # a distill sees it and bails. Only a real user session (no such env) proceeds.
 [[ "${GRANDMA_DISTILLING:-0}" == "1" ]] && exit 0
 
+# DEFER GUARD. When grandma launched this session (grandma-launch wraps the session rather
+# than exec-ing it), it distills in the FOREGROUND after you exit and offers an immediate
+# review. It marks the session with GRANDMA_DEFER_DISTILL=1 so this async hook stands down
+# and we don't distill the same session twice. Plain `claude` sessions have no such env, so
+# the hook still handles them.
+[[ "${GRANDMA_DEFER_DISTILL:-0}" == "1" ]] && exit 0
+
 input="$(cat 2>/dev/null || true)"
 reason="$(printf '%s' "$input" | jq -r '.reason // empty' 2>/dev/null || true)"
 tpath="$(printf '%s' "$input"  | jq -r '.transcript_path // empty' 2>/dev/null || true)"

@@ -88,21 +88,30 @@ Hour six behaves like minute one. You do nothing.
 
 ---
 
-## 6. End the day, review what she learned
+## 6. End the day, review what she learned — right then
 
-Exit a session with Ctrl+D. A guarded background pass reads the transcript and writes
-a proposal, never touching memory directly:
+Exit a session with Ctrl+D. Grandma looks over the session on the spot and shows you
+what she noted, instead of leaving it for next time:
 
 ```text
 $ grandma acme
-  📝 1 pending memory proposal for acme — run: grandma review acme
-  🧶 memory has 2 uncommitted changes — review: git -C ~/.grandma diff
-
-$ grandma review acme     # see what she thinks was worth keeping, apply what you agree with
-$ git -C ~/.grandma diff  # or read the raw diffs. your memory, your call.
+  ...your work...
+                            # (you press Ctrl+D)
+  🧶 grandma is looking over the session…
+  🧶 grandma noted something from this acme session:
+     • 2 memory file(s) updated live (uncommitted)
+     • a drafted proposal to review
+  review now? [Y/n] y
+  ── live memory diff (git -C ~/.grandma diff) ──
+  ...the diff...
+  ── drafted proposal ──
+  ...apply it with: grandma review --apply <file>
 ```
 
-Nothing enters memory permanently without passing through your git diff.
+Answer `n` and it waits for you (`grandma review acme` later, or `git -C ~/.grandma diff`).
+Sessions you didn't launch with grandma get the same distill quietly in the background,
+surfaced at your next launch. Either way, nothing enters memory permanently without passing
+through your git diff.
 
 ---
 

@@ -168,6 +168,53 @@ print(os.path.commonpath(dirs) if dirs else '')
 " 2>/dev/null || true
 }
 
+# post_session — runs after a wrapped session returns (we do NOT exec claude). Distills the
+# just-ended session in the FOREGROUND and offers an immediate review of everything grandma
+# noted (live captures + the drafted proposal), instead of leaving it for the next launch.
+# Interactive terminals only; honors GRANDMA_NO_AUTOSAVE. Uses $SCOPE / $RP_NAME / $ROOT.
+post_session() {
+  set +e                                                # best-effort UX; never abort the exit
+  [ -t 0 ] || return 0
+  [[ "${GRANDMA_NO_AUTOSAVE:-0}" == "1" ]] && return 0
+  cd "$ROOT" 2>/dev/null || return 0
+
+  printf '\n  🧶 grandma is looking over the session… (Ctrl+C to skip)\n' >&2
+  local proposal=""
+  proposal="$("$ENGINE/lib/grandma-save.sh" "$SCOPE" ${RP_NAME:+"$RP_NAME"} --auto 2>/dev/null | tail -n1)"
+
+  local dirty prop_ok=0
+  dirty="$(git -C "$ROOT" status --porcelain -- '*.md' 2>/dev/null | wc -l | tr -d ' ')"
+  if [[ -n "$proposal" && -f "$proposal" ]] \
+     && grep -qvE '^#|^[[:space:]]*$|No durable learnings|\(distiller failed\)' "$proposal" 2>/dev/null; then
+    prop_ok=1
+  fi
+
+  if [[ "${dirty:-0}" -eq 0 && "$prop_ok" -eq 0 ]]; then
+    printf '  🧶 nothing new to remember from this session.\n\n' >&2
+    return 0
+  fi
+
+  printf '\n  🧶 grandma noted something from this %s session:\n' "$SCOPE" >&2
+  [[ "${dirty:-0}" -gt 0 ]] && printf '     • %s memory file(s) updated live (uncommitted)\n' "$dirty" >&2
+  [[ "$prop_ok" -eq 1 ]]    && printf '     • a drafted proposal to review\n' >&2
+  printf '  review now? [Y/n] ' >&2
+  local ans; read -r ans
+  if [[ "${ans:-y}" =~ ^[Yy]?$ ]]; then
+    if [[ "${dirty:-0}" -gt 0 ]]; then
+      printf '\n  ── live memory diff (git -C %s diff) ──\n' "$ROOT" >&2
+      git -C "$ROOT" --no-pager diff -- '*.md' >&2
+    fi
+    if [[ "$prop_ok" -eq 1 ]]; then
+      printf '\n  ── drafted proposal (%s) ──\n' "$proposal" >&2
+      cat "$proposal" >&2
+      printf '\n  apply it interactively with:  grandma review --apply %s\n' "$proposal" >&2
+    fi
+    printf '\n' >&2
+  else
+    printf '  🧶 left for later — grandma review %s, or git -C %s diff\n\n' "$SCOPE" "$ROOT" >&2
+  fi
+}
+
 # ---- parse args: grandma <sweater> [project] [task...] [--full] [--writing] ----
 # A single bare word right after the scope (no spaces, before any task words) is the project.
 SCOPE=""
@@ -349,4 +396,11 @@ printf '  ⟳ %s\n  ⟳ launching Claude Code — a few seconds; she confirms me
 # Launch in the project folder if known (so its CLAUDE.md auto-loads), else current dir.
 # --add-dir grants write access to the grandma repo so in-flight captures can land.
 [[ -n "$LAUNCH_DIR" ]] && cd "$LAUNCH_DIR"
-exec claude --name "grandma:$SCOPE${RP_NAME:+/$RP_NAME}" --add-dir "$ROOT" ${PASSTHRU[@]+"${PASSTHRU[@]}"} --append-system-prompt "$SYSPROMPT" "$INIT"
+# WRAP the session (do not exec): we regain control when it exits and run post_session to
+# distill + offer an immediate review. GRANDMA_DEFER_DISTILL tells the SessionEnd hook to
+# stand down so the same session is not distilled twice.
+export GRANDMA_DEFER_DISTILL=1
+CLAUDE_RC=0
+claude --name "grandma:$SCOPE${RP_NAME:+/$RP_NAME}" --add-dir "$ROOT" ${PASSTHRU[@]+"${PASSTHRU[@]}"} --append-system-prompt "$SYSPROMPT" "$INIT" || CLAUDE_RC=$?
+post_session
+exit "$CLAUDE_RC"

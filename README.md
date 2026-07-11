@@ -17,7 +17,7 @@ Your AI forgets everything between sessions. Every morning you re-explain your s
 > platform like reddit, an area like job-search. Under a sweater live your projects.
 > Grandma knits each sweater from its own memory, and the threads never cross.
 
-**This is not `/compact`.** Compaction shrinks one conversation. Grandma does three things a single session never can:
+Grandma does three things a single session never can:
 
 - **Keeps your worlds apart.** Client A's memory never leaks into a client B session. Ever. It is a tested guarantee, not a habit.
 - **Remembers across all of them, forever.** Tell her once, in any session; every future session in that sweater knows.
@@ -98,7 +98,7 @@ Writes land as uncommitted diffs in your memory repo. `git diff` is your review 
 
 ### She survives the context window
 
-Long sessions hit Claude Code's compaction and normally lose their instructions. Grandma installs a hook that re-injects your memory the moment compaction happens, so hour six behaves like minute one. When you exit, a guarded background pass distills anything the session learned into a proposal you can review later.
+Long sessions hit Claude Code's compaction and normally lose their instructions. Grandma installs a hook that re-injects your memory the moment compaction happens, so hour six behaves like minute one. When you exit, grandma looks over the session right then and shows you what she noted — the live diffs plus a drafted proposal — and asks whether to review now or leave it. Nothing is applied without you. (Sessions you didn't start with grandma get the same distill quietly in the background, surfaced at your next launch.)
 
 ### She watches for your blind spots
 

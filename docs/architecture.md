@@ -40,9 +40,14 @@ Three routes, one definition of "worth remembering" (`prompts/capture.md`):
   correction, entity, procedure, preference, thread-state), an anti-list, and a
   precision-over-recall bias: a missed fact self-heals because it will come up again,
   noise does not.
-- **Exit distill.** SessionEnd triggers a detached, guarded, headless pass that reads
-  the transcript and writes a proposal file. It applies nothing. `grandma review`
-  is where you accept or discard.
+- **Exit distill.** When you launched with grandma, the launcher wraps the session (it
+  does not `exec`), so it regains control when you quit and distills the transcript in the
+  foreground, then shows the live diffs plus the drafted proposal and asks to review now or
+  later. It marks the session with `GRANDMA_DEFER_DISTILL=1` so the SessionEnd hook stands
+  down and nothing is distilled twice. A plain `claude` session (grandma not the launcher)
+  still gets the distill from the detached, guarded SessionEnd hook, which drops a proposal
+  file surfaced at your next launch. Either path applies nothing; `grandma review` is where
+  you accept or discard.
 - **Manual.** `grandma save <sweater> [project]` runs the distiller interactively with
   you in the loop.
 

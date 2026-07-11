@@ -56,6 +56,14 @@ section "session-end — no scope arg is a no-op"
 capture env bash -c "'$SEND' </dev/null"
 assert_rc 0 "session-end with no scope exits 0"
 
+section "session-end — DEFER guard (GRANDMA_DEFER_DISTILL=1 -> launcher handles it, no spawn)"
+before="$(count_proposals)"
+capture env GRANDMA_DEFER_DISTILL=1 PATH="$FB:$PATH" bash -c \
+  "printf '{\"reason\":\"other\",\"transcript_path\":\"$TRANS\"}' | '$SEND' globex billing"
+assert_rc 0 "session-end defers cleanly when the launcher owns the distill"
+[ "$(count_proposals)" = "$before" ] && ok "deferred hook does not spawn a background distill" \
+                                     || fail "deferred hook spawned a distill anyway"
+
 section "session-end — normal end DOES spawn a distill (async, fake claude)"
 before="$(count_proposals)"
 env PATH="$FB:$PATH" bash -c \

@@ -48,5 +48,25 @@ if [ "$prc" -eq 2 ]; then skip "no usable pty tool — interactive picker not ex
 elif [ "$prc" -eq 142 ]; then fail "picker hung under a pty"
 else ok "interactive picker runs and quits without hanging (rc=$prc)"; fi
 
+section "launch — end-of-session review prompt in a pty (macOS/skip-if-no-pty)"
+# Make the memory home dirty so post_session has something to surface deterministically
+# (no transcript needed). Then run the wrapped launch in a pty; the fake claude exits at
+# once, post_session sees the uncommitted diff and offers a review; we answer 'n'.
+printf -- '- extra note added mid-session\n' >> "$GRANDMA_HOME/globex/facts.md"
+SHIM_L="$(make_fake_claude "$TMP/bin3")"; export SHIM_L GBIN_L="$GBIN" H_L="$GRANDMA_HOME"
+# Assert only on output printed BEFORE the read prompt — pty input timing across the
+# claude-exit boundary is not reliable enough to pin which answer branch runs.
+out="$(printf 'n\n' | run_in_pty 'GRANDMA_HOME="$H_L" GRANDMA_NO_SPLASH=1 HOME="'"$TMP"'/fh" PATH="$SHIM_L:$PATH" "$GBIN_L" globex 2>&1')"
+prc=$?
+if [ "$prc" -eq 2 ]; then
+  skip "no usable pty tool — end-of-session review not exercised"
+else
+  # shellcheck disable=SC2034  # LAST_OUT is read by assert_* (sourced from lib/assert.sh)
+  LAST_OUT="$out"
+  assert_contains "grandma is looking over the session" "post_session runs after the wrapped session"
+  assert_contains "grandma noted something" "detects the session's memory changes"
+  assert_contains "review now?" "offers an immediate review at session end (not left for later)"
+fi
+
 echo
 if [ "$FAILS" -eq 0 ]; then echo "cmd_launch: PASS"; else echo "cmd_launch: $FAILS FAILURE(S)"; exit 1; fi
