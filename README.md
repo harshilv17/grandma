@@ -3,7 +3,7 @@
 </p>
 
 <h1 align="center">grandma</h1>
-<p align="center"><b>The terminal that remembers you.</b></p>
+<p align="center"><b>A memory layer for Claude Code that learns as you work.</b></p>
 
 <p align="center">
   <a href="https://github.com/anshulforyou/grandma/actions"><img src="https://github.com/anshulforyou/grandma/actions/workflows/test.yml/badge.svg" alt="CI"></a>
@@ -13,13 +13,13 @@
 
 Your AI forgets everything between sessions. Every morning you re-explain your stack, your conventions, your client, your life. Grandma fixes that. She gives Claude Code a persistent memory that is **yours** (plain markdown in your own git repo), **separated by sweater** (one per part of your life, kept apart), and **learned passively** while you work.
 
-> **A sweater** is a part of your life you keep memory under: a company, a client, a
-> platform like reddit, an area like job-search. Under a sweater live your projects.
-> Grandma knits each sweater from its own memory, and the threads never cross.
+> **A sweater is a context you keep separate memory in** — one company, one client, your
+> job hunt, your writing. Open a sweater and grandma remembers everything about *that* part
+> of your life and nothing from the others. Your projects live inside a sweater.
 
 Grandma does three things a single session never can:
 
-- **Keeps your worlds apart.** Client A's memory never leaks into a client B session. Ever. It is a tested guarantee, not a habit.
+- **Keeps your worlds apart.** Client A's memory never shows up in a client B session — enforced by a test, not by discipline.
 - **Remembers across all of them, forever.** Tell her once, in any session; every future session in that sweater knows.
 - **Analyzes your whole history and acts on it.** She can study weeks of your chats and turn what she finds into memory:
 
@@ -30,8 +30,6 @@ grandma> read 1,297 of your messages across 19 sessions.
          ✓ updated global/identity.md
          review it: git -C ~/.grandma diff
 ```
-
-No other memory tool reads your own history back to you like that.
 
 Here is the everyday loop. Teach her once, and a brand new session already knows:
 
@@ -88,7 +86,7 @@ Memory lives in `GRANDMA_HOME` (default `~/.grandma`), a git repo that belongs t
 
 ### She learns while you work
 
-Every session carries a capture doctrine: when something durable comes up (a preference, a correction, a fact that changed, a lesson), grandma writes it to the right memory file mid-conversation and tells you in one line:
+During a session, when something worth keeping comes up (a preference, a correction, a fact that changed, a lesson), grandma writes it to the right memory file and tells you in one line:
 
 ```text
 ✓ noted (correction) -> global/preferences.md: never auto-commit, review diffs first
