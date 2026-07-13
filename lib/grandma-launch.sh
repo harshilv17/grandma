@@ -56,14 +56,17 @@ source "$ENGINE/lib/grandma-lib.sh"
 
 # Launch the new-sweater creator: read a free-text description, hand it to an LLM session
 # that scaffolds the sweater, then stops. Execs claude (does not return).
-create_new_scope() {   # optional $1: a name the user already typed, e.g. `grandma persona`
+# create_new_scope: knit a new sweater. Optional $1 is a name the user already typed at the
+# CLI (as in `grandma <name>`), used as the suggested sweater name so the flow proposes it.
+create_new_scope() {
   local suggested="${1:-}"
   if [[ -n "$suggested" ]]; then
-    printf "\n  Let's knit the '%s' sweater. What is it — a company, a client, a platform, an\n  area of your life? A sentence is enough:\n  > " "$suggested" >&2
+    printf "\n  Let's knit the '%s' sweater. In a sentence, what is it?\n  (a company, a client, a platform, or an area of your life)\n  > " "$suggested" >&2
   else
-    printf '\n  Describe the new sweater — a part of your life to keep memory under\n  (a company, a client, a platform, or an area like job-search).\n  e.g. "my resume is at ~/docs/cv.pdf, I am job hunting for staff eng roles":\n  > ' >&2
+    printf '\n  Describe the new sweater — a part of your life to keep memory under.\n  (a company, a client, a platform, or an area like job-search)\n  e.g. "job hunting for staff eng roles; resume at ~/docs/cv.pdf"\n  > ' >&2
   fi
-  local desc; IFS= read -r desc
+  # read -e -> readline line editing (arrow keys, cursor movement) for the free-text answer
+  local desc; IFS= read -e -r desc
   [[ -z "$desc" ]] && { echo "  no description given, aborting." >&2; exit 1; }
   local SYS
   SYS="$(cat "$ENGINE/prompts/new-scope.md")
