@@ -85,5 +85,23 @@ else
   assert_contains "review before we start?" "offers to review a prior session's notes at launch"
 fi
 
+section "launch — unknown sweater offers to knit it, not a cryptic error"
+capture env "$GBIN" persona </dev/null                    # non-tty: friendly, actionable error
+assert_rc 1 "grandma <unknown> exits 1 (no hang/crash)"
+assert_contains "no sweater 'persona' yet" "gives a friendly message for an unknown sweater"
+assert_not_contains "no scope matching" "no longer surfaces the raw assemble scope error"
+
+section "launch — unknown sweater knit offer on a real terminal (pty)"
+SHIM_U="$(make_fake_claude "$TMP/bin5")"; export SHIM_U GBIN_U="$GBIN" H_U="$GRANDMA_HOME"
+out="$(printf 'n\n' | run_in_pty 'GRANDMA_HOME="$H_U" GRANDMA_NO_SPLASH=1 HOME="'"$TMP"'/fh" PATH="$SHIM_U:$PATH" "$GBIN_U" persona 2>&1')"
+prc=$?
+if [ "$prc" -eq 2 ]; then
+  skip "no usable pty tool — knit-offer not exercised"
+else
+  # shellcheck disable=SC2034  # LAST_OUT is read by assert_* (sourced from lib/assert.sh)
+  LAST_OUT="$out"
+  assert_contains "knit it now?" "offers to knit an unknown sweater on a real terminal"
+fi
+
 echo
 if [ "$FAILS" -eq 0 ]; then echo "cmd_launch: PASS"; else echo "cmd_launch: $FAILS FAILURE(S)"; exit 1; fi

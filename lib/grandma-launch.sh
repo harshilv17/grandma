@@ -56,8 +56,13 @@ source "$ENGINE/lib/grandma-lib.sh"
 
 # Launch the new-sweater creator: read a free-text description, hand it to an LLM session
 # that scaffolds the sweater, then stops. Execs claude (does not return).
-create_new_scope() {
-  printf '\n  Describe the new sweater — a part of your life to keep memory under\n  (a company, a client, a platform, or an area like job-search).\n  e.g. "my resume is at ~/docs/cv.pdf, I am job hunting for staff eng roles":\n  > ' >&2
+create_new_scope() {   # optional $1: a name the user already typed, e.g. `grandma persona`
+  local suggested="${1:-}"
+  if [[ -n "$suggested" ]]; then
+    printf "\n  Let's knit the '%s' sweater. What is it — a company, a client, a platform, an\n  area of your life? A sentence is enough:\n  > " "$suggested" >&2
+  else
+    printf '\n  Describe the new sweater — a part of your life to keep memory under\n  (a company, a client, a platform, or an area like job-search).\n  e.g. "my resume is at ~/docs/cv.pdf, I am job hunting for staff eng roles":\n  > ' >&2
+  fi
   local desc; IFS= read -r desc
   [[ -z "$desc" ]] && { echo "  no description given, aborting." >&2; exit 1; }
   local SYS
@@ -65,12 +70,13 @@ create_new_scope() {
 
 ===== GLOBAL MEMORY (who the user is) =====
 $(cat "$ROOT/global/identity.md" "$ROOT/global/preferences.md" "$ROOT/global/style.md" 2>/dev/null || true)"
+  local INIT="Create a new grandma sweater from this description, following your instructions: $desc"
+  [[ -n "$suggested" ]] && INIT="The user wants a sweater named '$suggested'. $INIT"
   grandma_splash "new sweater"
   printf '  ⟳ knitting a new sweater from your description...\n\n' >&2
   cd "$ROOT"
   exec claude --name "grandma:new-sweater" ${PASSTHRU[@]+"${PASSTHRU[@]}"} \
-    --append-system-prompt "$SYS" \
-    "Create a new grandma sweater from this description, following your instructions: $desc"
+    --append-system-prompt "$SYS" "$INIT"
 }
 
 # First run: no sweaters yet. Warmly onboard instead of showing a bare picker.
@@ -262,6 +268,20 @@ if [[ -z "$SCOPE" ]]; then
     echo "usage: grandma <sweater> [project] [task...] [--full] [--writing]" >&2
     echo "  (run 'grandma' on a terminal with no sweater to pick one or knit a new one)" >&2
     exit 2
+  fi
+fi
+
+# Scope named but not a sweater yet: offer to knit it, instead of a cryptic assemble error.
+if ! resolve_scope_dir "$SCOPE" >/dev/null 2>&1; then
+  if [[ -t 0 && "${GRANDMA_DRY_RUN:-0}" != "1" ]]; then
+    printf "\n  no sweater '%s' yet. knit it now? [Y/n] " "$SCOPE" >&2
+    read -r _mk
+    [[ "${_mk:-y}" =~ ^[Yy]?$ ]] && create_new_scope "$SCOPE"   # execs; does not return
+    echo "  ok — run 'grandma' anytime to pick or knit a sweater." >&2
+    exit 0
+  else
+    echo "no sweater '$SCOPE' yet — run 'grandma' to knit one, or 'grandma <existing-sweater>'." >&2
+    exit 1
   fi
 fi
 
