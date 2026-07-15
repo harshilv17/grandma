@@ -63,5 +63,12 @@ word from a prompt).
 
 ## Good first contributions
 
-Linux polish, new use-case recipes for docs/use-cases.md, locale-safe dates,
-adapter experiments for other agent CLIs. Look for `good first issue`.
+The issues tagged [`good first issue`](https://github.com/anshulforyou/grandma/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+are the place to start. They are small and self-contained, each with a clear "done", and
+each touches a real part of the engine: shell completion, a `search` and a `status`
+command, an editor shortcut, a new watch lens, and use-case recipes for docs/use-cases.md.
+
+If you would rather shape a bigger direction, two design threads are open under Discussions:
+a [launcher adapter](https://github.com/anshulforyou/grandma/discussions/13) so grandma can
+drive CLIs other than Claude Code, and the [knit backend](https://github.com/anshulforyou/grandma/discussions/14)
+for peer sharing of project memory. Argue for an interface there before writing code.
