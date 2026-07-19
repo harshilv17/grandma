@@ -16,7 +16,7 @@
 #   grandma watch <start|status|...>   analysis campaigns over your sessions
 #   grandma test [sweater]             verify the context-integrity invariants
 #   grandma doctor                     check dependencies and memory-home health
-#   grandma completions <bash|zsh>     print the shell tab-completion script
+#   grandma completions <bash|zsh|fish> print the shell tab-completion script
 #   grandma help                       this text
 #
 # Memory lives in GRANDMA_HOME (default ~/.grandma) — your files, your git repo,
