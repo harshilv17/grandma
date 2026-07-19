@@ -67,6 +67,17 @@ git clone https://github.com/anshulforyou/grandma && cd grandma && ./bin/grandma
 
 Requirements: [Claude Code](https://claude.com/claude-code), git, jq, python3. macOS or Linux (Windows via WSL). `grandma doctor` checks everything and tells you how to fix what is missing.
 
+## Update
+
+The engine is a git checkout, so updating is a fast-forward pull:
+
+```sh
+grandma update          # pull the latest engine, then show what changed
+grandma version         # what you are running right now
+```
+
+grandma tracks `master` (a rolling release). It never phones home: instead of checking a server, it prints one quiet line at launch when your engine has gone stale (more than a week since your last `grandma update`), nudging you to run it. Silence that with `GRANDMA_NO_UPDATE_CHECK=1`, or tune the window with `GRANDMA_UPDATE_STALE_DAYS`. Re-running the installer updates in place too.
+
 ### Tab completion
 
 Optional, and worth it. With it on, `grandma <TAB>` lists your sweaters, `grandma per<TAB>` completes the one you mean, and `grandma acme <TAB>` lists the projects under acme. Add one line to your shell rc:
@@ -194,7 +205,7 @@ grandma knit                   coming next: share a project's memory with a team
   hooks (upstream issue), so the end-of-session distill only runs on Ctrl+D. Manual
   fallback always works: `grandma save <sweater>`.
 - Sweater names that collide with subcommands (`init`, `save`, `review`, `search`,
-  `ingest`, `watch`, `test`, `doctor`, `help`) are reserved.
+  `ingest`, `watch`, `test`, `doctor`, `update`, `version`, `help`) are reserved.
 - macOS is the daily-driven platform. Linux is CI-tested but younger: if something
   misbehaves, `grandma doctor` first, then an issue with its output.
 
