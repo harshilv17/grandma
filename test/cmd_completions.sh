@@ -53,6 +53,11 @@ assert_contains "grandma completions __scopes" "bash script calls the scope list
 capture env "$GBIN" completions zsh
 assert_rc 0 "completions zsh runs"
 assert_contains "compdef _grandma_complete grandma" "zsh script registers via compdef"
+capture env "$GBIN" completions fish
+assert_rc 0 "completions fish runs"
+assert_contains "complete -c grandma" "fish script registers via complete -c"
+assert_contains "grandma completions __scopes" "fish script calls the scope lister at TAB time"
+assert_contains "grandma completions __projects" "fish script calls the project lister at TAB time"
 
 section "completions - subcommand routing"
 # Source the generated bash completion exactly as a user would. A function named grandma

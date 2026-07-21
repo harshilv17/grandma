@@ -11,10 +11,12 @@
 # Usage:
 #   grandma completions bash      print the bash completion script
 #   grandma completions zsh       print the zsh completion script
+#   grandma completions fish      print the fish completion script
 #
 # Enable (see README):
 #   bash:  eval "$(grandma completions bash)"     # add to ~/.bashrc
 #   zsh:   eval "$(grandma completions zsh)"       # add to ~/.zshrc (needs compinit)
+#   fish:  grandma completions fish | source       # add to ~/.config/fish/config.fish
 
 set -uo pipefail
 ENGINE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -119,11 +121,24 @@ compdef _grandma_complete grandma
 ZSH
 }
 
+# _gc_emit_fish - the fish completion script. Fish reads "token<TAB>description"
+# lines natively, so full project names show up as descriptions for free.
+_gc_emit_fish() {
+  cat <<'FISH'
+# grandma fish completion. Enable with:  grandma completions fish | source
+complete -c grandma -f
+complete -c grandma -l full -l writing
+complete -c grandma -n 'test (count (commandline -opc)) -eq 1' -a '(grandma completions __scopes 2>/dev/null)'
+complete -c grandma -n 'test (count (commandline -opc)) -eq 2' -a '(grandma completions __projects (commandline -opc)[2] 2>/dev/null)'
+FISH
+}
+
 case "${1:-}" in
   bash)        _gc_emit_bash ;;
   zsh)         _gc_emit_zsh ;;
+  fish)        _gc_emit_fish ;;
   __scopes)    _gc_scopes ;;
   __projects)  shift; _gc_projects "${1:-}" ;;
   __watch_commands) _gc_watch_commands ;;
-  *)           echo "usage: grandma completions <bash|zsh>" >&2; exit 2 ;;
+  *)           echo "usage: grandma completions <bash|zsh|fish>" >&2; exit 2 ;;
 esac

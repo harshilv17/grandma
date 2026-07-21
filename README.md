@@ -88,6 +88,10 @@ eval "$(grandma completions bash)"
 
 # zsh: add to ~/.zshrc, below an existing `autoload -Uz compinit && compinit`
 eval "$(grandma completions zsh)"
+
+# fish: add to ~/.config/fish/config.fish
+grandma completions fish | source
+# (or persist it once: grandma completions fish > ~/.config/fish/completions/grandma.fish)
 ```
 
 Start a new shell and press TAB after `grandma`. Grandma does not touch your rc file for you, so turning this on stays your call.
@@ -195,7 +199,7 @@ grandma search [sweater] <query> grep across your memory
 grandma ingest [sweater]         catalog an existing folder of projects
 grandma watch ...              analysis campaigns over your sessions
 grandma test [sweater]           verify the integrity invariants
-grandma completions bash|zsh   print the shell tab-completion script
+grandma completions bash|zsh|fish print the shell tab-completion script
 grandma knit                   coming next: share a project's memory with a teammate (see below)
 ```
 
